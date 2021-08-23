@@ -4,6 +4,11 @@ const buttons = require('discord-buttons')
 const bot = new Discord.Client()
 buttons(bot)
 
+bot.on('ready', () => {
+    console.log('Bot has started!')
+    bot.user.setActivity('⠀', { type: 'PLAYING' });
+})
+
 bot.on('message', (message) => {
     if (message.content === '<@!879002654045511691>') { message.reply(`Hey there! My ping is ${bot.ws.ping} ms! If you need commands, type @myusername help`) }
     else if (message.content === '<@!879002654045511691> help') {
@@ -26,13 +31,17 @@ bot.on('clickButton', (button) => {
         const button2 = new buttons.MessageButton().setStyle('grey').setLabel('No?').setID('button2').setDisabled()
         
         const row = new buttons.MessageActionRow().addComponents(button1, button2)
-        button.message.edit('Alright then! Let us continue.', row).then((message) => {
-            setTimeout(function(){button.message.delete()}, 1000)
+        button.message.edit('Alright then! Let us continue. \n**Please know that information here is kept private.**\n**In addition, please answer these questions honestly!**', row).then((message) => {
+            setTimeout(function(){button.message.delete()}, 6000)
             button.channel.startTyping()
             setTimeout(function(){
                 message.channel.stopTyping();
-                message.channel.send('Question 1:');
-            }, 1000);
+                const button1 = new buttons.MessageButton().setStyle('grey').setLabel('Yes').setID('button3')
+                const button2 = new buttons.MessageButton().setStyle('grey').setLabel('No').setID('button4')
+
+                const row = new buttons.MessageActionRow().addComponents(button1, button2)
+                message.channel.send('Question 1: Do you feel sad about something?', row);
+            }, 7000);
         })
     } else if (button.id === 'button2') {
         const button1 = new buttons.MessageButton().setStyle('grey').setLabel('Of course').setID('button1').setDisabled()
