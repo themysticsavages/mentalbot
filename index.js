@@ -114,7 +114,6 @@ bot.on('clickButton', (button) => {
         })
     }
     button.reply.defer()
-    console.log(data)
 })
 
 bot.login(require('./config.js').token)
