@@ -7,8 +7,8 @@ There's not many commands this bot has since it only specializes in one thing, b
 
 ```
 help - Simply get the current commands and the prefix, which is just a mention of MentalBot
-ping - Ping the bot to see if it is up, and recieve the API latency in milliseconds
 ask - Directly get asked 5 questions regarding mental status and recieve a score out of 10 (101% private!)
+scrap - Remove all data you created
 ```
 
 ## What's next?
