@@ -1,9 +1,12 @@
 const Discord = require('discord.js')
 const buttons = require('discord-buttons')
+const fs = require('fs')
 
 const bot = new Discord.Client()
-let data = []
 buttons(bot)
+
+let data = []
+let user = ''
 
 bot.on('ready', () => {
     console.log('Bot has started!')
@@ -19,6 +22,8 @@ bot.on('message', (message) => {
         message.reply(embed)
     } else if (message.content === '<@!879002654045511691> ask') {
         data = []
+        user = message.author.tag
+
         const button1 = new buttons.MessageButton().setStyle('grey').setLabel('Of course').setID('button1')
         const button2 = new buttons.MessageButton().setStyle('grey').setLabel('No?').setID('button2')
 
@@ -98,9 +103,19 @@ bot.on('clickButton', (button) => {
             setTimeout(function(){button.message.delete()}, 6000)
             button.channel.startTyping()
             setTimeout(function(){
-                message.channel.stopTyping();
-                message.channel.send(`Alright! Your score is **${generateResponse(data)}** out of 10. There's more to be added here, but I'm still in beta :neutral_face:`);
+                button.channel.stopTyping();
+                button.channel.send(`Alright! Your score is **${generateResponse(data)}** out of 10. There's more to be added here, but I'm still in beta :neutral_face:`);
             }, 3000);
+
+            if (fs.existsSync(`./db/${user}.json`) === true) {
+                let cnt = fs.readFileSync(`./db/${user}.json`, 'utf-8').toJSON()
+                cnt['count']++
+                fs.writeFileSync(`./db/${user}.json`)
+            } else {
+                let json = `{"count": 1, "scores": [${generateResponse(data)}]}`
+                fs.writeFileSync(`./db/${user}.json`, json)
+            }
+
         })
     } else if (button.id === 'button12') {
         data.push(0)
@@ -108,9 +123,19 @@ bot.on('clickButton', (button) => {
             setTimeout(function(){button.message.delete()}, 6000)
             button.channel.startTyping()
             setTimeout(function(){
-                message.channel.stopTyping();
-                message.channel.send(`Alright! Your score is **${generateResponse(data)}** out of 10. There's more to be added here, but I'm still in beta :neutral_face:`);
+                button.channel.stopTyping();
+                button.channel.send(`Alright! Your score is **${generateResponse(data)}** out of 10. There's more to be added here, but I'm still in beta :neutral_face:`);
             }, 3000);
+
+            if (fs.existsSync(`./db/${user}.json`) === true) {
+                let cnt = fs.readFileSync(`./db/${user}.json`, 'utf-8').toJSON()
+                cnt['count']++
+                fs.writeFileSync(`./db/${user}.json`)
+            } else {
+                let json = `{"count": 1, "scores": [${generateResponse(data)}]}`
+                fs.writeFileSync(`./db/${user}.json`, json)
+            }
+
         })
     }
     button.reply.defer()
