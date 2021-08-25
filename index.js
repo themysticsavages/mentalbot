@@ -8,19 +8,29 @@ buttons(bot)
 let data = []
 let user = ''
 
+function generateButtons(id1, id2, disabled=undefined) {
+    const button1 = new buttons.MessageButton().setStyle('grey').setLabel('Yes').setID(id1)
+    const button2 = new buttons.MessageButton().setStyle('grey').setLabel('No').setID(id2)
+    
+    if (disabled) { button1.setDisabled(); button2.setDisabled() }
+
+    const row = new buttons.MessageActionRow().addComponents(button1, button2)
+    return row
+}
+
 bot.on('ready', () => {
     console.log('Bot has started!')
     bot.user.setActivity('⠀', { type: 'WATCHING' });
 })
 
 bot.on('message', (message) => {
-    if (message.content === '<@!879002654045511691>') { message.reply(`Hey there! My ping is ${bot.ws.ping} ms! If you need commands, type @myusername help`) }
-    else if (message.content === '<@!879002654045511691> help') {
+    if (message.content === '<@!880062178361769986>') { message.reply(`Hey there! My ping is ${bot.ws.ping} ms! If you need commands, type @myusername help`) }
+    else if (message.content === '<@!880062178361769986> help') {
         const embed = new Discord.MessageEmbed()
             .setTitle('Help')
-            .setDescription('Always use @myusername as the prefix!\n`help`, `ask`')
+            .setDescription('Always use @myusername as the prefix!\n`help`, `ask`, `scrap`')
         message.reply(embed)
-    } else if (message.content === '<@!879002654045511691> ask') {
+    } else if (message.content === '<@!880062178361769986> ask') {
         data = []
         user = message.author.tag
 
@@ -29,20 +39,18 @@ bot.on('message', (message) => {
 
         const row = new buttons.MessageActionRow().addComponents(button1, button2)
         message.author.send("Hello! Since you ran the command `ask`, I'm assuming that you want to answer questions regarding your mental health?", row)
+    } else if (message.content === '<@!880062178361769986> scrap') {
+        user = message.author.tag
+
+        if (fs.existsSync(`./db/${user}.json`)) {
+            message.author.send('Are you sure you want to remove the data you have entered?', generateButtons('buttonA', 'buttonB'))
+        } else {
+            message.author.send("You don't have any data created!")
+        }
     }
 })
 
 bot.on('clickButton', (button) => {
-    // reduce lines
-    function generateButtons(id1, id2, disabled=undefined) {
-        const button1 = new buttons.MessageButton().setStyle('grey').setLabel('Yes').setID(id1)
-        const button2 = new buttons.MessageButton().setStyle('grey').setLabel('No').setID(id2)
-        
-        if (disabled) { button1.setDisabled(); button2.setDisabled() }
-
-        const row = new buttons.MessageActionRow().addComponents(button1, button2)
-        return row
-    }
     // weird array iterating thing that generates score out of 10 (whole numbers)
     function generateResponse(array) {
        var res = 10
@@ -108,9 +116,12 @@ bot.on('clickButton', (button) => {
             }, 3000);
 
             if (fs.existsSync(`./db/${user}.json`) === true) {
-                let cnt = fs.readFileSync(`./db/${user}.json`, 'utf-8').toJSON()
+                let cnt = JSON.parse(fs.readFileSync(`./db/${user}.json`, 'utf-8'))
+
                 cnt['count']++
-                fs.writeFileSync(`./db/${user}.json`)
+                cnt['scores'].push(generateResponse(data))
+
+                fs.writeFileSync(`./db/${user}.json`, JSON.stringify(cnt))
             } else {
                 let json = `{"count": 1, "scores": [${generateResponse(data)}]}`
                 fs.writeFileSync(`./db/${user}.json`, json)
@@ -128,15 +139,23 @@ bot.on('clickButton', (button) => {
             }, 3000);
 
             if (fs.existsSync(`./db/${user}.json`) === true) {
-                let cnt = fs.readFileSync(`./db/${user}.json`, 'utf-8').toJSON()
+                let cnt = JSON.parse(fs.readFileSync(`./db/${user}.json`, 'utf-8'))
+
                 cnt['count']++
-                fs.writeFileSync(`./db/${user}.json`)
+                cnt['scores'].push(generateResponse(data))
+
+                fs.writeFileSync(`./db/${user}.json`, JSON.stringify(cnt))
             } else {
                 let json = `{"count": 1, "scores": [${generateResponse(data)}]}`
                 fs.writeFileSync(`./db/${user}.json`, json)
             }
 
         })
+    } else if (button.id === 'buttonA') {
+        fs.rmSync(`./db/${user}.json`)
+        button.message.edit('Your data was removed sucessfully!', generateButtons('buttonA', 'buttonB', true))
+    } else if (button.id === 'buttonB') {
+        button.message.edit('Ok then, have a nice day.', generateButtons('buttonA', 'buttonB', true))
     }
     button.reply.defer()
 })
