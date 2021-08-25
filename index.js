@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const buttons = require('discord-buttons')
+const chart = require('chart.js-image')
 const fs = require('fs')
 
 const bot = new Discord.Client()
@@ -16,6 +17,43 @@ function generateButtons(id1, id2, disabled=undefined) {
 
     const row = new buttons.MessageActionRow().addComponents(button1, button2)
     return row
+}
+
+function generateGraph(val) {
+    const lines = chart().chart({
+        'type': 'line',
+        'data': {
+            'labels': [
+                'Day 1',
+                'Day 2',
+                'Day 3',
+                'Day 4',
+                'Day 5',
+            ],
+            'datasets': [
+                {
+                    'label': 'Score',
+                    'borderColor': 'rgb(255,+99,+132)',
+                    'backgroundColor': 'rgba(255,+99,+132,+0.5)',
+                    'data': [
+                        val[0],
+                        val[1],
+                        val[2],
+                        val[3],
+                        val[4],
+                    ]
+                }
+            ]
+        },
+        'options': {
+            'title': {
+                'display': true,
+                'text': 'Mental status'
+            }
+        }
+    }).backgroundColor('#404040').width('500').height('300')
+
+    lines.toFile('./graph.png')
 }
 
 bot.on('ready', () => {
@@ -122,6 +160,12 @@ bot.on('clickButton', (button) => {
                 cnt['scores'].push(generateResponse(data))
 
                 fs.writeFileSync(`./db/${user}.json`, JSON.stringify(cnt))
+
+                if (cnt['count'] === 5) {
+                    generateGraph(cnt['scores'])
+                    setTimeout(function(){button.channel.send('Here is a graph that contains the five times you have ran the `ask` command.', { files: ['./graph.png'] })}, 3000)
+                    fs.rmSync(`./db/${user}.json`)
+                }
             } else {
                 let json = `{"count": 1, "scores": [${generateResponse(data)}]}`
                 fs.writeFileSync(`./db/${user}.json`, json)
@@ -145,6 +189,12 @@ bot.on('clickButton', (button) => {
                 cnt['scores'].push(generateResponse(data))
 
                 fs.writeFileSync(`./db/${user}.json`, JSON.stringify(cnt))
+
+                if (cnt['count'] === 5) {
+                    generateGraph(cnt['scores'])
+                    setTimeout(function(){button.channel.send('Here is a graph that contains the five times you have ran the `ask` command.', { files: ['./graph.png'] })}, 3000)
+                    fs.rmSync(`./db/${user}.json`)
+                }
             } else {
                 let json = `{"count": 1, "scores": [${generateResponse(data)}]}`
                 fs.writeFileSync(`./db/${user}.json`, json)
