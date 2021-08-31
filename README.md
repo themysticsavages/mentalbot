@@ -8,7 +8,9 @@ There's not many commands this bot has since it only specializes in one thing, b
 ```
 help - Simply get the current commands and the prefix, which is just a mention of MentalBot
 ask - Directly get asked 5 questions regarding mental status and recieve a score out of 10 (101% private!)
+subscribe - Receive a daily notification to run the ask command
 scrap - Remove all data you created
+scrap.sub - Removes your subscription status only.
 ```
 
 ## What's next?
@@ -16,3 +18,5 @@ Well, I'm planning on making some kind of alert system which simply DMs the user
 
 ## What are you gonna do if people self-host your bot and steal people's data?
 I don't know, just **please** don't do that.
+
+<sub>Yes I know it is built on discord.js@12.0.0 i really don't care</sub>
