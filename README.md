@@ -14,9 +14,9 @@ scrap.sub - Removes your subscription status only.
 ```
 
 ## What's next?
-Well, I'm planning on making some kind of alert system which simply DMs the user to run the ask command every day or so. Of course this will be a command.
+To give some - uhhh - **actual advice to give people**
 
 ## What are you gonna do if people self-host your bot and steal people's data?
-I don't know, just **please** don't do that.
+I don't know, just *please* don't do that.
 
 <p align="center"><sub>Yes I know it is built on discord.js@12.0.0 i really don't care</sub></p>
